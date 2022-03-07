@@ -42,13 +42,36 @@
         <button :disabled="specialAttackActive" @click="specialAttackMonster">
           SPECIAL ATTACK
         </button>
-        <button @click="healPLayer">HEAL</button>
+        <button :disabled="fullHealth" @click="healPLayer">HEAL</button>
         <button @click="surrenderGame">SURRENDER</button>
       </section>
 
       <section id="log" class="container">
         <h2>Battle Log</h2>
-        <ul></ul>
+        <ul>
+          <li
+            class="container"
+            v-for="(battleLog, index) in battleLogMessages"
+            :key="index"
+          >
+            <span
+              :class="{'log--player':battleLog.actionBy === 'player', 'log--monster':battleLog.actionBy === 'monster'}"
+            >
+              {{battleLog.actionBy === 'player' ? 'Player' : 'Monster'}}
+            </span>
+
+            <span v-if="battleLog.actionType === 'heal'">
+              heals himself for
+
+              <span class="log--heal">{{battleLog.actionValue}}</span>
+            </span>
+
+            <span v-else>
+              attacks and deals
+              <span class="log--damage">{{battleLog.actionValue}}</span>
+            </span>
+          </li>
+        </ul>
       </section>
     </div>
   </body>

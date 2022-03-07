@@ -11,6 +11,7 @@ const app = Vue.createApp({
       monsterHealth: 100,
       currentRound: 0,
       winner: null,
+      battleLogMessages: [],
     };
   },
   computed: {
@@ -31,8 +32,11 @@ const app = Vue.createApp({
     },
 
     specialAttackActive() {
-      console.log(this.currentRound);
       return this.currentRound % 3 !== 0;
+    },
+
+    fullHealth() {
+      return this.playerHealth === 100;
     },
   },
   watch: {
@@ -62,12 +66,14 @@ const app = Vue.createApp({
 
       const playerAttackValue = randomNumGen(5, 12);
       this.monsterHealth -= playerAttackValue;
+      this.addLogMessage("player", "attack", playerAttackValue);
       this.attackPlayer();
     },
 
     attackPlayer() {
       const monsterAttackValue = randomNumGen(8, 15);
       this.playerHealth -= monsterAttackValue;
+      this.addLogMessage("monster", "attack", monsterAttackValue);
     },
 
     specialAttackMonster() {
@@ -75,18 +81,24 @@ const app = Vue.createApp({
 
       const playerAttackValue = randomNumGen(10, 25);
       this.monsterHealth -= playerAttackValue;
+      this.addLogMessage("player", "attack", playerAttackValue);
       this.attackPlayer();
     },
 
     healPLayer() {
+      if (this.playerHealth === 100) {
+        return;
+      }
       this.currentRound++;
 
       const playerHealValue = randomNumGen(8, 20);
+
       if (this.playerHealth + playerHealValue > 100) {
         this.playerHealth = 100;
       } else {
         this.playerHealth += playerHealValue;
       }
+      this.addLogMessage("player", "heal", playerHealValue);
       this.attackPlayer();
     },
 
@@ -95,11 +107,21 @@ const app = Vue.createApp({
       this.monsterHealth = 100;
       this.currentRound = 0;
       this.winner = null;
+      this.battleLogMessages = [];
     },
 
     surrenderGame() {
       this.playerHealth = 0;
       this.winner = "monster";
+      this.battleLogMessages = [];
+    },
+
+    addLogMessage(who, what, value) {
+      this.battleLogMessages.unshift({
+        actionBy: who,
+        actionType: what,
+        actionValue: value,
+      });
     },
   },
 });
